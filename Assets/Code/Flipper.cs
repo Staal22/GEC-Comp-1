@@ -37,7 +37,7 @@ public class Flipper : MonoBehaviour
             float timer = 0;
             Quaternion rotation = transform.rotation;
 
-            while (timer <= 1f)
+            while (timer <= 0.5f)
             {
                 timer += Time.deltaTime;
                 _rb.MoveRotation(rotation * Quaternion.Euler(0, 0, curve.Evaluate(timer) * _orientation * 90f));
