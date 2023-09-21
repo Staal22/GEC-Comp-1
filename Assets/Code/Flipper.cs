@@ -6,36 +6,39 @@ using UnityEngine;
 public class Flipper : MonoBehaviour
 {
     [SerializeField] private AnimationCurve curve;
+    [SerializeField] private bool left = false;
+    private int _orientation = 1;
+    private bool _flipping = false;
+    private Coroutine _flip;
 
-    float _timer = 5f;
-    private Coroutine rut;
-    private void Update()
+    private void Start()
     {
-        if (Input.GetKeyDown(KeyCode.A) && _timer > 1f)
-        {
-            _timer = 0f;
-            if (rut != null)
-            {
-                StopCoroutine(rut);
-            }
-            rut = StartCoroutine(somead());
-        }
-        _timer += Time.deltaTime;
-
-        // float angleRotation = curve.Evaluate(_timer) * 90f;
-        // Vector3 rotation = new Vector3(0, 0, angleRotation);
-        // transform.localEulerAngles = rotation;
+        InputHandler.Instance.OnFlip += Flip;
+        _orientation = left ? -1 : 1;
     }
 
-    public IEnumerator somead()
+    private void Flip(bool pressedLeft)
     {
-        float timer = 0;
-        while (timer < 2f)
-        {
-            timer += Time.deltaTime;
-            transform.localEulerAngles = new Vector3(0,0, curve.Evaluate(timer) * 90f);
-            yield return new WaitForEndOfFrame();
-        }
+        if (_flipping) return;
+        StartCoroutine(FlipRoutine(pressedLeft));
     }
     
+    private IEnumerator FlipRoutine(bool pressedLeft)
+    {
+        if (pressedLeft == left)
+        {
+            _flipping = true;
+            float timer = 0;
+            Vector3 rotation = transform.localEulerAngles;
+
+            while (timer <= 1f)
+            {
+                timer += Time.deltaTime;
+                transform.localEulerAngles = new Vector3(transform.localEulerAngles.x,transform.localEulerAngles.y, rotation.z + curve.Evaluate(timer) * _orientation * 90f);
+                yield return null;
+            }
+            transform.localEulerAngles = rotation;
+            _flipping = false;
+        }
+    }
 }
