@@ -26,6 +26,7 @@ public class Bouncer : MonoBehaviour
         Rigidbody rb = other.gameObject.GetComponent<Rigidbody>();
         if (rb != null && !_isAnimating)
         {
+            ScoreManager.Instance.AddScore(50);
             var direction = other.GetContact(0).normal;
             var velocity = -1 * rb.velocity;
             rb.AddForce(-direction * 80 + velocity, ForceMode.Impulse);
